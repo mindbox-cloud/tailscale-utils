@@ -3,6 +3,7 @@
 TS_AUTH_TOKEN=${TS_AUTH_TOKEN}
 TS_HOSTNAME=${TS_HOSTNAME}
 TS_LOGIN_SERVER=${TS_LOGIN_SERVER}
+TS_UP_ARGS=${TS_UP_ARGS}
 
 DERP_DOMAIN=${DERP_DOMAIN}
 DERP_ENV_FILE=${DERP_ENV_FILE:-/etc/default/derper}
@@ -51,8 +52,6 @@ function install_tailscale {
 }
 
 function setup_tailscale {
-    local SETUP_ADD_ARGS=$1
-
     systemctl enable --now tailscaled
     sleep 2;
 
@@ -60,7 +59,7 @@ function setup_tailscale {
     read_input TS_AUTH_TOKEN "Enter Tailscale auth token"
     read_input TS_HOSTNAME "Enter Tailscale hostname (device name)"
 
-    tailscale up --login-server ${TS_LOGIN_SERVER} --auth-key ${TS_AUTH_TOKEN} --hostname ${TS_HOSTNAME} ${SETUP_ADD_ARGS}
+    tailscale up --login-server ${TS_LOGIN_SERVER} --auth-key ${TS_AUTH_TOKEN} --hostname ${TS_HOSTNAME} ${TS_UP_ARGS}
 }
 
 function install_go {

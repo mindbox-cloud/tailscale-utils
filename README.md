@@ -28,6 +28,7 @@ You can use environment variables to automate installation process:
 - `DERP_DOMAIN` - Hostname that DERP will run on and obtain its certificate
 - `DERP_ENV_FILE` - (optional) location of DERP service's variables
     - Default value: `/etc/default/derper`
+- `TS_UP_ARGS` - additional arguments for Tailscale when connecting to network (e.g. `--accept-routes --accept-dns`)
 
 Usage example:
 ```
