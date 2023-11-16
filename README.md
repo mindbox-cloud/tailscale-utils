@@ -8,11 +8,11 @@ Quickly set up and run Tailscale client and/or DERP server
 ### How to run
 Run following command(s) and follow the instructions
 ```
-curl -fsSL https://raw.githubusercontent.com/mindbox-cloud/main/tailscale-setup.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/mindbox-cloud/tailscale-utils/main/tailscale-setup.sh | sudo bash
 ```
 or
 ```
-curl -fsSL https://raw.githubusercontent.com/mindbox-cloud/main/tailscale-setup.sh > tailscale-setup.sh
+curl -fsSL https://raw.githubusercontent.com/mindbox-cloud/tailscale-utils/main/tailscale-setup.sh > tailscale-setup.sh
 chmod +x tailscale-setup.sh
 sudo ./tailscale-setup.sh
 ```
