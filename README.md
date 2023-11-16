@@ -1,6 +1,7 @@
 # Tailscale Utilities
 Here you can find decriptions and instructions for each provided utility
-## setup-tailscale.sh
+
+## tailscale-setup.sh
 ### Description
 Quickly set up and run Tailscale client and/or DERP server
 
