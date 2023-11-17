@@ -4,11 +4,19 @@ TS_AUTH_TOKEN=${TS_AUTH_TOKEN}
 TS_HOSTNAME=${TS_HOSTNAME}
 TS_LOGIN_SERVER=${TS_LOGIN_SERVER}
 TS_UP_ARGS=${TS_UP_ARGS}
+TS_ACCEPT_ROUTES=${TS_ACCEPT_ROUTES}
+TS_ACCEPT_DNS=${TS_ACCEPT_DNS}
 
 DERP_DOMAIN=${DERP_DOMAIN}
 DERP_ENV_FILE=${DERP_ENV_FILE:-/etc/default/derper}
+DERP_VERIFY_CLIENTS=${DERP_VERIFY_CLIENTS}
+DERP_ARGS=${DERP_ARGS}
+DERP_HTTP_PORT=${DERP_HTTP_PORT}
+DERP_HTTPS_PORT=${DERP_HTTPS_PORT}
+DERP_STUN_PORT=${DERP_STUN_PORT}
 
 INSTALL_MODE=${INSTALL_MODE}
+USE_DEFAULT_VALS=${USE_DEFAULT_VALS}
 
 if [[ $EUID -ne 0 ]]; then
     echo "This script must be run as root!"
@@ -20,9 +28,36 @@ echo "This script was tested on Ubuntu 22.04"
 echo "Maintainer: kulev@mindbox.cloud"
 echo "======================================"
 
+# arg1: variable name
+# arg2: prompt
+# arg3: default value
+# arg4: is optional?
+# arg5: echo message
 function read_input {
+    if [[ "$4" == "1" && ! -z "$3" ]]; then
+        declare -g ${1}=$3
+        return
+    fi
+
+    local R_PROMPT="${2}"
+
+    if [[ ! -z "$3" ]]; then
+        R_PROMPT="$R_PROMPT [$3]"
+    fi
+
+    R_PROMPT="$R_PROMPT: "
+
+    if [[ ! -z "$5" ]]; then
+        echo -e "$5"
+    fi
+
     while [[ -z "${!1}" ]]; do
-        read -rp "${2}: " ${1} < /dev/tty
+        read -rp "$R_PROMPT" ${1} < /dev/tty
+
+        if [[ -z "${!1}" && ! -z "$3" ]]; then
+            declare -g ${1}=$3
+            break
+        fi
     done
 }
 
@@ -43,7 +78,7 @@ function def_install_components {
     echo "3. Tailscale + DERP"
     echo ""
 
-    read_input INSTALL_MODE "Enter an option"
+    read_input INSTALL_MODE "Enter an option" "3"
 }
 
 function install_tailscale {
@@ -55,9 +90,19 @@ function setup_tailscale {
     systemctl enable --now tailscaled
     sleep 2;
 
-    read_input TS_LOGIN_SERVER "Enter Tailscale login server"
+    read_input TS_LOGIN_SERVER "Enter Tailscale login server" "https://controlplane.tailscale.com"
     read_input TS_AUTH_TOKEN "Enter Tailscale auth token"
-    read_input TS_HOSTNAME "Enter Tailscale hostname (device name)"
+    read_input TS_HOSTNAME "Enter Tailscale hostname (device name)" "$(hostname)"
+    read_input TS_ACCEPT_ROUTES "Accept routes (1 = yes)" "1" "$USE_DEFAULT_VALS"
+    read_input TS_ACCEPT_DNS "Accept DNS (1 = yes)" "1" "$USE_DEFAULT_VALS"
+
+    if [[ "$TS_ACCEPT_ROUTES" == "1" ]]; then
+        TS_UP_ARGS="--accept-routes $TS_UP_ARGS"
+    fi
+
+    if [[ "$TS_ACCEPT_DNS" == "1" ]]; then
+        TS_UP_ARGS="--accept-dns $TS_UP_ARGS"
+    fi
 
     tailscale up --login-server ${TS_LOGIN_SERVER} --auth-key ${TS_AUTH_TOKEN} --hostname ${TS_HOSTNAME} ${TS_UP_ARGS}
 }
@@ -93,17 +138,16 @@ User=derp
 Group=derp
 WorkingDirectory=/opt/derp
 EnvironmentFile=$DERP_ENV_FILE
-ExecStart=/bin/bash -c "./go/bin/derper -c derp.conf --hostname \${DERP_DOMAIN} \${DERP_ARGS}"
+ExecStart=/bin/bash -c "./go/bin/derper -c derp.conf \
+    --hostname \${DERP_DOMAIN} \
+    -a \${DERP_HTTPS_URL} \
+    --http-port \${DERP_HTTP_PORT} \
+    --stun-port \${DERP_STUN_PORT} \
+    \${DERP_ARGS}" 
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
-EOF
-
-    echo "Creating environment file"
-    cat <<EOF > $DERP_ENV_FILE
-DERP_DOMAIN=
-DERP_ARGS=--stun=true --verify-clients
 EOF
 
     systemctl daemon-reload
@@ -111,14 +155,23 @@ EOF
 
 function setup_derp {
     read_input DERP_DOMAIN "Enter DERP domain name (hostname)"
+    read_input DERP_VERIFY_CLIENTS "Verify DERP clients (1 = yes)" "1" "$USE_DEFAULT_VALS"
+    read_input DERP_HTTP_PORT "Set DERP HTTP port" "80" "$USE_DEFAULT_VALS"
+    read_input DERP_HTTPS_PORT "Set DERP HTTPS port" "443" "$USE_DEFAULT_VALS"
+    read_input DERP_STUN_PORT "Set DERP STUN port" "3478" "$USE_DEFAULT_VALS"
 
-    # Set DERP_DOMAIN to env file
-    if grep -q "^DERP_DOMAIN=" "${DERP_ENV_FILE}"; then
-        sed -i -e "s/^DERP_DOMAIN=.*/DERP_DOMAIN=${DERP_DOMAIN}/" "${DERP_ENV_FILE}"
-    else
-        # DERP_DOMAIN does not exist, append it
-        echo "DERP_DOMAIN=${DERP_DOMAIN}" >> "${DERP_ENV_FILE}"
+    if [[ "$DERP_VERIFY_CLIENTS" == "1" ]]; then
+        DERP_ARGS="--verify-clients $DERP_ARGS"
     fi
+
+    echo "Creating environment file"
+    cat <<EOF > $DERP_ENV_FILE
+DERP_DOMAIN=$DERP_DOMAIN
+DERP_HTTP_PORT=$DERP_HTTP_PORT
+DERP_HTTPS_URL=:$DERP_HTTPS_PORT
+DERP_STUN_PORT=$DERP_STUN_PORT
+DERP_ARGS=$DERP_ARGS
+EOF
 
     systemctl enable derper
     systemctl restart derper

@@ -22,21 +22,29 @@ You can use environment variables to automate installation process:
     - 1 = Tailscale only
     - 2 = DERP only
     - 3 = Tailscale + DERP
+- `USE_DEFAULT_VALS` - Set to `1` to skip prompts for optional variables and use default values
 - `TS_AUTH_TOKEN` - Authentication token a.k.a. Preauth key
 - `TS_HOSTNAME` - Hostname to use in Tailscale network
 - `TS_LOGIN_SERVER` - Login server for Tailscale (e.g. `https://controlplane.tailscale.com`)
+- `TS_ACCEPT_ROUTES` - Set to `1` to accept routes from peers when connection to Tailscale (optional, default: `1`)
+- `TS_ACCEPT_DNS` - Set to `1` to accept DNS from Tailscale (optional, default: `1`)
+- `TS_UP_ARGS` - Additional arguments when connecting to Tailscale (optional, e.g. `--advertise-tags=tag:derp`)
 - `DERP_DOMAIN` - Hostname that DERP will run on and obtain its certificate
-- `DERP_ENV_FILE` - (optional) location of DERP service's variables
-    - Default value: `/etc/default/derper`
-- `TS_UP_ARGS` - additional arguments for Tailscale when connecting to network (e.g. `--accept-routes --accept-dns`)
+- `DERP_VERIFY_CLIENTS` - Whether to verify clients connecting to node. Works only if Tailscale is installed (optional, default: `1`)
+- `DERP_HTTP_PORT` - HTTP port for DERP to use (optional, default: `80`)
+- `DERP_HTTPS_PORT` - HTTP port for DERP to use (optional, default: `443`)
+- `DERP_STUN_PORT` - STUN port (optional, default: `3878`)
+- `DERP_ENV_FILE` - Location of DERP service's variables (optional, default: `/etc/default/derper`)
+- `DERP_ARGS` - Additional arguments for DERP (optional, e.g. `--stun=false`)
 
 Usage example:
 ```
 INSTALL_MODE=3 \
+USE_DEFAULT_VALS=1 \
 TS_AUTH_TOKEN=abcdef1234 \
 TS_HOSTNAME=derp-node-a1 \
 TS_LOGIN_SERVER=https://ts.example.com \
 DERP_DOMAIN=derp-a1.example.com \
-sudo ./tailscale-setup.sh
+sudo -E ./tailscale-setup.sh
 ```
 This will install Tailscale and DERP
