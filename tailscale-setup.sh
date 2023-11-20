@@ -109,6 +109,8 @@ function setup_tailscale {
     read_input TS_HOSTNAME "Enter Tailscale hostname (device name)" "$(hostname)"
     read_input TS_ACCEPT_ROUTES "Accept routes (1 = yes)" "1" "$USE_DEFAULT_VALS"
     read_input TS_ACCEPT_DNS "Accept DNS (1 = yes)" "1" "$USE_DEFAULT_VALS"
+    read_input TS_ADVERTISE_ROUTES "Enter CIDRs" "" "$USE_DEFAULT_VALS" "To advertise routes enter comma-separated CIDRs\n(e.g. 192.168.0.0/24,192.168.1.0/24)"
+    read_input TS_TAGS "Enter tags" "" "$USE_DEFAULT_VALS" "To advertise tags enter comma-separated list of tags\n(e.g. vpn,mgmt)"
 
     if [[ "$TS_ACCEPT_ROUTES" == "1" ]]; then
         TS_UP_ARGS="--accept-routes $TS_UP_ARGS"
@@ -116,6 +118,25 @@ function setup_tailscale {
 
     if [[ "$TS_ACCEPT_DNS" == "1" ]]; then
         TS_UP_ARGS="--accept-dns $TS_UP_ARGS"
+    fi
+
+    if [[ ! -z "$TS_ADVERTISE_ROUTES" ]]; then
+        TS_UP_ARGS="--advertise-routes $TS_ADVERTISE_ROUTES $TS_UP_ARGS"
+    fi
+
+    if [[ ! -z "$TS_TAGS" ]]; then
+        IFS=","
+
+        read -ra TS_TAGS_ARR <<< "$TS_TAGS"
+        local tags=()
+
+        for t in "${TS_TAGS_ARR[@]}"; do
+            tags+=("tag:$t")
+        done
+
+        TS_UP_ARGS="--advertise-tags ${tags[*]} $TS_UP_ARGS"
+
+        IFS=" "
     fi
 
     tailscale up --login-server ${TS_LOGIN_SERVER} --auth-key ${TS_AUTH_TOKEN} --hostname ${TS_HOSTNAME} ${TS_UP_ARGS}
