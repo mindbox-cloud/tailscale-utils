@@ -6,6 +6,9 @@ TS_LOGIN_SERVER=${TS_LOGIN_SERVER}
 TS_UP_ARGS=${TS_UP_ARGS}
 TS_ACCEPT_ROUTES=${TS_ACCEPT_ROUTES}
 TS_ACCEPT_DNS=${TS_ACCEPT_DNS}
+TS_UP_SKIP=${TS_UP_SKIP}
+TS_ADVERTISE_ROUTES=${TS_ADVERTISE_ROUTES}
+TS_TAGS=${TS_TAGS}
 
 DERP_DOMAIN=${DERP_DOMAIN}
 DERP_ENV_FILE=${DERP_ENV_FILE:-/etc/default/derper}
@@ -89,6 +92,12 @@ function install_tailscale {
 function setup_tailscale {
     systemctl enable --now tailscaled
     sleep 2;
+
+    if [[ "$TS_UP_SKIP" == "1" ]]; then
+        echo "Variable TS_UP_SKIP is set to 1."
+        echo "You will have to join Tailnet manually."
+        return
+    fi
 
     read_input TS_LOGIN_SERVER "Enter Tailscale login server" "https://controlplane.tailscale.com"
     read_input TS_AUTH_TOKEN "Enter Tailscale auth token"
