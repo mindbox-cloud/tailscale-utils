@@ -26,10 +26,10 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-echo "======================================"
-echo "This script was tested on Ubuntu 22.04"
-echo "Maintainer: kulev@mindbox.cloud"
-echo "======================================"
+echo "========================================"
+echo " This script was tested on Ubuntu 22.04"
+echo " Maintainer: kulev@mindbox.cloud"
+echo "========================================"
 
 function read_input {
     local variable_name=$1
@@ -38,7 +38,11 @@ function read_input {
     local is_optional=$4
     local echo_message=$5
 
-    if [[ "$is_optional" == "1" && ! -z "$def_val" ]]; then
+    if [[ -z "$def_val" && "$is_optional" == "1" ]]; then
+        local can_be_empty="1"
+    fi
+
+    if [[ "$is_optional" == "1" && ( ! -z "$def_val" || "$can_be_empty" == "1" ) ]]; then
         declare -g $variable_name=$def_val
         return
     fi
@@ -58,7 +62,7 @@ function read_input {
     while [[ -z "${!variable_name}" ]]; do
         read -rp "$R_PROMPT" ${variable_name} < /dev/tty
 
-        if [[ -z "${!variable_name}" && ! -z "$def_val" ]]; then
+        if [[ -z "${!variable_name}" && ( ! -z "$def_val" || "$can_be_empty" == "1" ) ]]; then
             declare -g ${variable_name}=$def_val
             break
         fi
