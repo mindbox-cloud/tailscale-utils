@@ -36,7 +36,8 @@ function read_input {
     local prompt=$2
     local def_val=$3
     local is_optional=$4
-    local echo_message=$5
+    local can_be_empty=$5
+    local echo_message=$6
 
     if [[ -z "$def_val" && "$is_optional" == "1" ]]; then
         local can_be_empty="1"
@@ -109,8 +110,8 @@ function setup_tailscale {
     read_input TS_HOSTNAME "Enter Tailscale hostname (device name)" "$(hostname)"
     read_input TS_ACCEPT_ROUTES "Accept routes (1 = yes)" "1" "$USE_DEFAULT_VALS"
     read_input TS_ACCEPT_DNS "Accept DNS (1 = yes)" "1" "$USE_DEFAULT_VALS"
-    read_input TS_ADVERTISE_ROUTES "Enter CIDRs" "" "$USE_DEFAULT_VALS" "To advertise routes enter comma-separated CIDRs\n(e.g. 192.168.0.0/24,192.168.1.0/24)"
-    read_input TS_TAGS "Enter tags" "" "$USE_DEFAULT_VALS" "To advertise tags enter comma-separated list of tags\n(e.g. vpn,mgmt)"
+    read_input TS_ADVERTISE_ROUTES "Enter CIDRs" "" "$USE_DEFAULT_VALS" "1" "To advertise routes enter comma-separated CIDRs\n(e.g. 192.168.0.0/24,192.168.1.0/24)"
+    read_input TS_TAGS "Enter tags" "" "$USE_DEFAULT_VALS" "1" "To advertise tags enter comma-separated list of tags\n(e.g. vpn,mgmt)"
 
     if [[ "$TS_ACCEPT_ROUTES" == "1" ]]; then
         TS_UP_ARGS="--accept-routes $TS_UP_ARGS"
