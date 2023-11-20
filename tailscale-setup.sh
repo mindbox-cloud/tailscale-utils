@@ -31,34 +31,35 @@ echo "This script was tested on Ubuntu 22.04"
 echo "Maintainer: kulev@mindbox.cloud"
 echo "======================================"
 
-# arg1: variable name
-# arg2: prompt
-# arg3: default value
-# arg4: is optional?
-# arg5: echo message
 function read_input {
-    if [[ "$4" == "1" && ! -z "$3" ]]; then
-        declare -g ${1}=$3
+    local variable_name=$1
+    local prompt=$2
+    local def_val=$3
+    local is_optional=$4
+    local echo_message=$5
+
+    if [[ "$is_optional" == "1" && ! -z "$def_val" ]]; then
+        declare -g $variable_name=$def_val
         return
     fi
 
-    local R_PROMPT="${2}"
+    local R_PROMPT="$prompt"
 
-    if [[ ! -z "$3" ]]; then
-        R_PROMPT="$R_PROMPT [$3]"
+    if [[ ! -z "$def_val" ]]; then
+        R_PROMPT="$R_PROMPT [$def_val]"
     fi
 
     R_PROMPT="$R_PROMPT: "
 
-    if [[ ! -z "$5" ]]; then
-        echo -e "$5"
+    if [[ ! -z "$echo_message" ]]; then
+        echo -e "$echo_message"
     fi
 
-    while [[ -z "${!1}" ]]; do
-        read -rp "$R_PROMPT" ${1} < /dev/tty
+    while [[ -z "${!variable_name}" ]]; do
+        read -rp "$R_PROMPT" ${variable_name} < /dev/tty
 
-        if [[ -z "${!1}" && ! -z "$3" ]]; then
-            declare -g ${1}=$3
+        if [[ -z "${!variable_name}" && ! -z "$def_val" ]]; then
+            declare -g ${variable_name}=$def_val
             break
         fi
     done
