@@ -10,6 +10,7 @@ TS_UP_SKIP=${TS_UP_SKIP}
 TS_ADVERTISE_ROUTES=${TS_ADVERTISE_ROUTES}
 TS_TAGS=${TS_TAGS}
 TS_PKGS_DOMAIN=${TS_PKGS_DOMAIN}
+TS_INSTALL_SKIP=${TS_INSTALL_SKIP}
 
 DERP_DOMAIN=${DERP_DOMAIN}
 DERP_ENV_FILE=${DERP_ENV_FILE:-/etc/default/derper}
@@ -100,6 +101,11 @@ function def_install_components {
 }
 
 function install_tailscale {
+    if [[ "$TS_INSTALL_SKIP" == "1" ]]; then
+        echo "Skipping Tailscale install"
+        return
+    fi
+
     echo "========================================================="
     echo " Installing Tailscale"
     echo " Acutal installation script made by Tailscale"
