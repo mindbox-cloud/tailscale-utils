@@ -42,6 +42,10 @@ function read_input {
     local can_be_empty=$5
     local echo_message=$6
 
+    if [[ ! -z "${!variable_name}" ]]; then
+        return
+    fi
+
     if [[ -z "$def_val" && "$is_optional" == "1" ]]; then
         local can_be_empty="1"
     fi
