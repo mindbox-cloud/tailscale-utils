@@ -9,6 +9,7 @@ TS_ACCEPT_DNS=${TS_ACCEPT_DNS}
 TS_UP_SKIP=${TS_UP_SKIP}
 TS_ADVERTISE_ROUTES=${TS_ADVERTISE_ROUTES}
 TS_TAGS=${TS_TAGS}
+TS_PKGS_DOMAIN=${TS_PKGS_DOMAIN}
 
 DERP_DOMAIN=${DERP_DOMAIN}
 DERP_ENV_FILE=${DERP_ENV_FILE:-/etc/default/derper}
@@ -96,7 +97,14 @@ function install_tailscale {
     echo " Acutal installation script made by Tailscale"
     echo " Refer to: https://tailscale.com/kb/1031/install-linux/"
     echo "========================================================="
-    curl -fsSL https://tailscale.com/install.sh | sh
+
+    if [[ -z "$TS_PKG_MIRROR" ]]; then
+        curl -fsSL https://tailscale.com/install.sh | sh
+    else
+        curl -fsSL https://tailscale.com/install.sh \
+        | sed "s|pkgs.tailscale.com|$TS_PKGS_DOMAIN|g" \
+        | sh
+    fi
 }
 
 function setup_tailscale {
