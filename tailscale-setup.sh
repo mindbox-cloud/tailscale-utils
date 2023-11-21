@@ -91,7 +91,11 @@ function def_install_components {
 }
 
 function install_tailscale {
-    echo "Installing Tailscale"
+    echo "========================================================="
+    echo " Installing Tailscale"
+    echo " Acutal installation script made by Tailscale"
+    echo " Refer to: https://tailscale.com/kb/1031/install-linux/"
+    echo "========================================================="
     curl -fsSL https://tailscale.com/install.sh | sh
 }
 

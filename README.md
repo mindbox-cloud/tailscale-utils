@@ -5,6 +5,8 @@ Here you can find decriptions and instructions for each provided utility
 ### Description
 Quickly set up and run Tailscale client and/or DERP server
 
+Actual installation scirpt for Tailscale [provided by Tailscale](https://tailscale.com/kb/1031/install-linux/)
+
 ### How to run
 Run following command(s) and follow the instructions
 ```
