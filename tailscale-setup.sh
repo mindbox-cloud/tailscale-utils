@@ -20,6 +20,7 @@ DERP_HTTPS_PORT=${DERP_HTTPS_PORT}
 DERP_STUN_PORT=${DERP_STUN_PORT}
 
 INSTALL_MODE=${INSTALL_MODE}
+UPDATE_SYSTEM=${UPDATE_SYSTEM}
 USE_DEFAULT_VALS=${USE_DEFAULT_VALS}
 
 if [[ $EUID -ne 0 ]]; then
@@ -72,6 +73,13 @@ function read_input {
 }
 
 function prepare_system {
+    read_input UPDATE_SYSTEM "Do you want to update packages first? (1 = yes)" "1" "$USE_DEF_VALS"
+
+    if [[ "$UPDATE_SYSTEM" != "1" ]]; then
+        echo "Skipping update"
+        return
+    fi
+
     echo "Updating the system first..."
 
     apt -y update
