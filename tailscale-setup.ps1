@@ -1,6 +1,14 @@
+$currentScript = $MyInvocation.MyCommand.Definition
+
+# Create a new PowerShell process with administrator rights
+if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$currentScript`"" -Verb RunAs
+    exit
+}
+
 $downloadUrl =
 if ($env:TS_DL_URL) { 
-    $env:VAR1 
+    $env:TS_DL_URL 
 }
 else { 
     "https://pkgs.tailscale.com/stable/tailscale-setup-1.54.0-amd64.msi" 
@@ -9,7 +17,7 @@ $tempFolder = [System.IO.Path]::GetTempPath()
 $fileName = "ts_setup.msi"
 $destinationPath = Join-Path $tempFolder $fileName
 
-echo "Downloading Tailscale setup package"
+echo "Downloading Tailscale setup package to `"$destinationPath`""
 Invoke-WebRequest -Uri $downloadUrl -OutFile $destinationPath
 
 $args = "/i `"$destinationPath`" /qn"
@@ -31,11 +39,15 @@ $args += " --unattended=true"
 $args += " --accept-dns=false"
 $args += " --accept-routes=false"
 
+echo "Let me sleep for 10 seconds before continuing to ensure"
+echo "that Tailscale service has started"
+Start-Sleep -s 10
+
 echo "Joining Tailnet"
-tailscale.exe $args
+Start-Process -FilePath "tailscale.exe" -ArgumentList $args -Wait
 
 $args = "set"
 $args += " --auto-update=true"
 
 echo "Enabling auto updates"
-tailscale.exe $args
+Start-Process -FilePath "tailscale.exe" -ArgumentList $args -Wait
