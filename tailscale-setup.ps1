@@ -11,7 +11,7 @@ if ($env:TS_DL_URL) {
     $env:TS_DL_URL 
 }
 else { 
-    "https://pkgs.tailscale.com/stable/tailscale-setup-1.54.0-amd64.msi" 
+    "https://pkgs.tailscale.com/stable/tailscale-setup-latest-amd64.msi" 
 }
 $tempFolder = [System.IO.Path]::GetTempPath()
 $fileName = "ts_setup.msi"
@@ -26,6 +26,8 @@ $args += " TS_ALLOWINCOMINGCONNECTIONS=always"
 
 echo "Installing Tailscale"
 Start-Process -FilePath "msiexec.exe" -ArgumentList $args -Wait
+
+Remove-Item -Path "$destinationPath" -Confirm
 
 # We shall reload PATH to set up tailscale further
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
