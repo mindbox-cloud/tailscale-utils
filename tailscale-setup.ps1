@@ -41,7 +41,7 @@ $args += " TS_ALLOWINCOMINGCONNECTIONS=always"
 echo "Installing Tailscale"
 Start-Process -FilePath "msiexec.exe" -ArgumentList $args -Wait
 
-Remove-Item -Path "$destinationPath" -Confirm
+Remove-Item -Path "$destinationPath" -Confirm:$false -Force
 
 # We shall reload PATH to set up tailscale further
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
@@ -54,7 +54,7 @@ $args += " --unattended=$env:TS_UNATTENDED"
 $args += " --accept-dns=$env:TS_ACCEPT_DNS"
 $args += " --accept-routes=$env:TS_ACCEPT_ROUTES"
 
-if ([string]::IsNullOrWhiteSpace($env:TS_TAGS)) {
+if (![string]::IsNullOrWhiteSpace($env:TS_TAGS)) {
     $args += " --advertise-tags $env:TS_TAGS"
 }
 
