@@ -54,3 +54,9 @@ DERP_DOMAIN=derp-a1.example.com \
 sudo -E ./tailscale-setup.sh
 ```
 This will install Tailscale and DERP
+
+## tailscale-setup.ps1
+### Description
+Windows counterpart for tailscale-setup.sh
+
+At current moment it uses only environment variables for configuration

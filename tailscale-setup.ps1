@@ -6,19 +6,33 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-$downloadUrl =
-if ($env:TS_DL_URL) { 
-    $env:TS_DL_URL 
+function Get-VarOrDefault {
+    param(
+        $VarName,
+        $DefVal
+    )
+
+    $envVarValue = [System.Environment]::GetEnvironmentVariable($VarName)
+
+    if ([string]::IsNullOrWhiteSpace($envVarValue)) {
+        [System.Environment]::SetEnvironmentVariable($VarName, $DefVal)
+        return $DefVal
+    } else {
+        return $envVarValue
+    }
 }
-else { 
-    "https://pkgs.tailscale.com/stable/tailscale-setup-latest-amd64.msi" 
-}
+
+$env:TS_DL_URL = Get-VarOrDefault "TS_DL_URL" "https://pkgs.tailscale.com/stable/tailscale-setup-latest-amd64.msi"
+$env:TS_UNATTENDED = Get-VarOrDefault "TS_UNATTENDED" "true"
+$env:TS_ACCEPT_DNS = Get-VarOrDefault "TS_ACCEPT_DNS" "true"
+$env:TS_ACCEPT_ROUTES = Get-VarOrDefault "TS_ACCEPT_ROUTES" "true"
+
 $tempFolder = [System.IO.Path]::GetTempPath()
 $fileName = "ts_setup.msi"
 $destinationPath = Join-Path $tempFolder $fileName
 
 echo "Downloading Tailscale setup package to `"$destinationPath`""
-Invoke-WebRequest -Uri $downloadUrl -OutFile $destinationPath
+Invoke-WebRequest -Uri $env:TS_DL_URL -OutFile $destinationPath
 
 $args = "/i `"$destinationPath`" /qn"
 $args += " TS_UNATTENDEDMODE=always"
@@ -36,10 +50,13 @@ $args = "up"
 $args += " --login-server $env:TS_LOGIN_SERVER"
 $args += " --auth-key $env:TS_AUTH_TOKEN"
 $args += " --hostname $env:TS_HOSTNAME" 
-$args += " --advertise-tags $env:TS_TAGS"
-$args += " --unattended=true"
-$args += " --accept-dns=false"
-$args += " --accept-routes=false"
+$args += " --unattended=$env:TS_UNATTENDED"
+$args += " --accept-dns=$env:TS_ACCEPT_DNS"
+$args += " --accept-routes=$env:TS_ACCEPT_ROUTES"
+
+if ([string]::IsNullOrWhiteSpace($env:TS_TAGS)) {
+    $args += " --advertise-tags $env:TS_TAGS"
+}
 
 echo "Let me sleep for 10 seconds before continuing to ensure"
 echo "that Tailscale service has started"
