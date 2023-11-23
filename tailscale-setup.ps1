@@ -1,38 +1,47 @@
+<#
+.SYNOPSIS
+    Script for unattended Tailscale installation
+
+.DESCRIPTION
+    Made by Mindbox
+    Maintained by: kulev@mindbox.cloud
+    Repository URL: https://github.com/mindbox-cloud/tailscale-utils
+#>
 param(
-    [Parameter(HelpMessage="Tailscale Login Server")]
+     ## Tailscale Login Server
     [string]$TsLoginServer = "https://controlplane.tailscale.com",
 
-    [Parameter(HelpMessage="Authentication key (a.k.a Preauth key)")]
+    ## Authentication key (a.k.a Preauth key)
     [string]$TsAuthToken,
 
-    [Parameter(HelpMessage="Hostname to use in Tailscale network")]
+    ## Hostname to use in Tailscale network
     [string]$TsHostname = [System.Net.Dns]::GetHostName(),
 
-    [Parameter(HelpMessage="Domain name of mirror where Tailscale's packages hosted (e.g. `ts-pkg.example.com`)")]
+    ## Domain name of mirror where Tailscale's packages hosted (e.g. `ts-pkg.example.com`)
     [string]$TsPkgsDomain = "pkgs.tailscale.com",
 
-    [Parameter(HelpMessage="Additional arguments when connecting to Tailscale")]
+    ## Additional arguments when connecting to Tailscale
     [string]$TsUpArgs,
 
-    [Parameter(HelpMessage="List of CIDRs to advertise as routes")]
+    ## List of CIDRs to advertise as routes
     [string[]]$TsAdvertiseRoutes,
 
-    [Parameter(HelpMessage="List of advertised tags")]
+    ## List of advertised tags
     [string[]]$TsTags,
 
-    [Parameter(HelpMessage="Run in unattended mode where Tailscale keeps running even after the current user logs out")]
+    ## Run in unattended mode where Tailscale keeps running even after the current user logs out
     [bool]$TsUnattended = $true,
 
-    [Parameter(HelpMessage="Wheter to accept DNS from Tailscale")]
+    ## Wheter to accept DNS from Tailscale
     [bool]$TsAcceptDns = $true,
 
-    [Parameter(HelpMessage="Whether to accept routes from Tailscale")]
+    ## Whether to accept routes from Tailscale
     [bool]$TsAcceptRoutes = $true,
 
-    [Parameter(HelpMessage="Enable automatic updates")]
+    ## Enable automatic updates
     [bool]$TsAutoUpdate = $true,
 
-    [Parameter(HelpMessage="Wheter to skip automatic joining to Tailnet")]
+    ## Wheter to skip automatic joining to Tailnet
     [bool]$TsUpSkip = $false
 )
 
