@@ -31,6 +31,9 @@ $tempFolder = [System.IO.Path]::GetTempPath()
 $fileName = "ts_setup.msi"
 $destinationPath = Join-Path $tempFolder $fileName
 
+$ErrorActionPreference = "Stop"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
+
 echo "Downloading Tailscale setup package to `"$destinationPath`""
 Invoke-WebRequest -Uri $env:TS_DL_URL -OutFile $destinationPath
 
@@ -58,8 +61,7 @@ if (![string]::IsNullOrWhiteSpace($env:TS_TAGS)) {
     $args += " --advertise-tags $env:TS_TAGS"
 }
 
-echo "Let me sleep for 10 seconds before continuing to ensure"
-echo "that Tailscale service has started"
+echo "Let me sleep for 10 seconds before continuing to ensure that Tailscale service has started"
 Start-Sleep -s 10
 
 echo "Joining Tailnet"
