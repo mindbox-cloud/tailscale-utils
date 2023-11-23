@@ -1,11 +1,3 @@
-$currentScript = $MyInvocation.MyCommand.Definition
-
-# Create a new PowerShell process with administrator rights
-if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$currentScript`"" -Verb RunAs
-    exit
-}
-
 param(
     [string]$TsLoginServer = "https://controlplane.tailscale.com",
     [string]$TsAuthKey,
@@ -22,6 +14,14 @@ param(
     [bool]$TsAutoUpdate = $true,
     [bool]$TsUpSkip = $false
 )
+
+$currentScript = $MyInvocation.MyCommand.Definition
+
+# Create a new PowerShell process with administrator rights
+if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$currentScript`"" -Verb RunAs
+    exit
+}
 
 $TsDlUrl = "https://$TsPkgsDomain/stable/tailscale-setup-latest-amd64.msi"
 
