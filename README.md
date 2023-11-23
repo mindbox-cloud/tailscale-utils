@@ -77,4 +77,4 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/mindbox-cloud/tailscal
 ### Additional configuration
 You can use arguments to configure how script will work.
 
-You may use `Get-Help` to get help on how to use arguments (e.g. `Get-Help .\tailscale-setup.ps1`)
+You may use `Get-Help` to get help on how to use arguments (e.g. `Get-Help .\tailscale-setup.ps1 -Detailed`)

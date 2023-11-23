@@ -23,10 +23,10 @@ param(
     ## Additional arguments when connecting to Tailscale
     [string]$TsUpArgs,
 
-    ## List of CIDRs to advertise as routes
+    ## Comma-separated list of CIDRs to advertise as routes
     [string[]]$TsAdvertiseRoutes,
 
-    ## List of advertised tags
+    ## Comma-separated list of advertised tags
     [string[]]$TsTags,
 
     ## Run in unattended mode where Tailscale keeps running even after the current user logs out
