@@ -7,19 +7,19 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 }
 
 param(
-    [string]$TsLoginServer = "https://controlplane.tailscale.com"
-    [string]$TsAuthKey
-    [string]$TsHostname = [System.Net.Dns]::GetHostName()
-    [string]$TsPkgsDomain = "pkgs.tailscale.com"
-    [string]$TsUpArgs
+    [string]$TsLoginServer = "https://controlplane.tailscale.com",
+    [string]$TsAuthKey,
+    [string]$TsHostname = [System.Net.Dns]::GetHostName(),
+    [string]$TsPkgsDomain = "pkgs.tailscale.com",
+    [string]$TsUpArgs,
 
-    [string[]]$TsAdvertiseRoutes
-    [string[]]$TsTags
+    [string[]]$TsAdvertiseRoutes,
+    [string[]]$TsTags,
 
-    [bool]$TsUnattended = $true
-    [bool]$TsAcceptDns = $true
-    [bool]$TsAcceptRoutes = $true
-    [bool]$TsAutoUpdate = $true
+    [bool]$TsUnattended = $true,
+    [bool]$TsAcceptDns = $true,
+    [bool]$TsAcceptRoutes = $true,
+    [bool]$TsAutoUpdate = $true,
     [bool]$TsUpSkip = $false
 )
 
