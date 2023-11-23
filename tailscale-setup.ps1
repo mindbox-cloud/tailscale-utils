@@ -1,17 +1,38 @@
 param(
+    [Parameter(HelpMessage="Tailscale Login Server")]
     [string]$TsLoginServer = "https://controlplane.tailscale.com",
-    [string]$TsAuthKey,
+
+    [Parameter(HelpMessage="Authentication key (a.k.a Preauth key)")]
+    [string]$TsAuthToken,
+
+    [Parameter(HelpMessage="Hostname to use in Tailscale network")]
     [string]$TsHostname = [System.Net.Dns]::GetHostName(),
+
+    [Parameter(HelpMessage="Domain name of mirror where Tailscale's packages hosted (e.g. `ts-pkg.example.com`)")]
     [string]$TsPkgsDomain = "pkgs.tailscale.com",
+
+    [Parameter(HelpMessage="Additional arguments when connecting to Tailscale")]
     [string]$TsUpArgs,
 
+    [Parameter(HelpMessage="List of CIDRs to advertise as routes")]
     [string[]]$TsAdvertiseRoutes,
+
+    [Parameter(HelpMessage="List of advertised tags")]
     [string[]]$TsTags,
 
+    [Parameter(HelpMessage="Run in unattended mode where Tailscale keeps running even after the current user logs out")]
     [bool]$TsUnattended = $true,
+
+    [Parameter(HelpMessage="Wheter to accept DNS from Tailscale")]
     [bool]$TsAcceptDns = $true,
+
+    [Parameter(HelpMessage="Whether to accept routes from Tailscale")]
     [bool]$TsAcceptRoutes = $true,
+
+    [Parameter(HelpMessage="Enable automatic updates")]
     [bool]$TsAutoUpdate = $true,
+
+    [Parameter(HelpMessage="Wheter to skip automatic joining to Tailnet")]
     [bool]$TsUpSkip = $false
 )
 
@@ -47,6 +68,11 @@ Remove-Item -Path "$destinationPath" -Confirm:$false -Force
 # We shall reload PATH to set up tailscale further
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
 
+if ($TsUpSkip) {
+    echo "TsUpSkip set to `"true`". You should join Tailnet manually"
+    exit
+}
+
 $args = "up $TsUpArgs"
 $args += " --login-server $TsLoginServer"
 $args += " --hostname $TsHostname" 
@@ -54,8 +80,8 @@ $args += " --unattended=$TsUnattended"
 $args += " --accept-dns=$TsAcceptDns"
 $args += " --accept-routes=$TsAcceptRoutes"
 
-if (![string]::IsNullOrWhiteSpace($TsAuthKey)) {
-    $args += " --auth-key $TsAuthKey"
+if (![string]::IsNullOrWhiteSpace($TsAuthToken)) {
+    $args += " --auth-key $TsAuthToken"
 }
 
 if ($TsTags.Length -gt 0) {

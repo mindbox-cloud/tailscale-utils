@@ -9,11 +9,11 @@ Actual installation scirpt for Tailscale [provided by Tailscale](https://tailsca
 
 ### How to run
 Run following command(s) and follow the instructions
-```
+```sh
 curl -fsSL https://raw.githubusercontent.com/mindbox-cloud/tailscale-utils/main/tailscale-setup.sh | sudo bash
 ```
 or
-```
+```sh
 curl -fsSL https://raw.githubusercontent.com/mindbox-cloud/tailscale-utils/main/tailscale-setup.sh > tailscale-setup.sh
 chmod +x tailscale-setup.sh
 sudo ./tailscale-setup.sh
@@ -44,7 +44,7 @@ You can use environment variables to automate installation process:
 - `DERP_ARGS` - Additional arguments for DERP (optional, e.g. `--stun=false`)
 
 Usage example:
-```
+```sh
 INSTALL_MODE=3 \
 USE_DEFAULT_VALS=1 \
 TS_AUTH_TOKEN=abcdef1234 \
@@ -57,6 +57,24 @@ This will install Tailscale and DERP
 
 ## tailscale-setup.ps1
 ### Description
-Windows counterpart for tailscale-setup.sh
+Windows counterpart for tailscale-setup.sh.
 
-At current moment it uses only environment variables for configuration
+**Please note that this script doen't support interactive mode and DERP setup!**
+
+### How to run
+
+Command below will download and launch script
+```powershell
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/mindbox-cloud/tailscale-utils/main/tailscale-setup.ps1" -OutFile "tailscale-setup.ps1";
+.\tailscale-setup.ps1 `
+-TsLoginServer "https://ts.example.com" `
+-TsAuthKey "abcdef1234" `
+-TsAcceptDns 0 `
+-TsAcceptRoutes 0
+```
+
+### Additional configuration
+You can use arguments to configure how script will work.
+
+You may use `Get-Help` to get help on how to use arguments (e.g. `Get-Help .\tailscale-setup.ps1`)
