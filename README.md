@@ -33,7 +33,7 @@ You can use environment variables to automate installation process:
 - `TS_UP_ARGS` - Additional arguments when connecting to Tailscale (optional, e.g. `--advertise-tags=tag:derp`)
 - `TS_UP_SKIP` - Set to `1` if you want to join Tailnet manually
 - `TS_ADVERTISE_ROUTES` - Comma-separated list of CIDRs to advertise as routes (optional, e.g. `192.168.0.0/24,192.168.1.0/24`)
-- `TS_PKGS_DOMAIN` - Domain name of mirror where Tailscale's packages hosted (optional, e.g. `ts-pkg.example.com`)
+- `TS_PKG_MIRROR` - ## Tailscale packages repository mirror (optional, e.g. `https://pkgs.example.com/ts`)
 - `TS_TAGS` - Comma-separated list of advertised tags (optional, e.g. `vpn,mgmt`)
 - `DERP_DOMAIN` - Hostname that DERP will run on and obtain its certificate
 - `DERP_VERIFY_CLIENTS` - Whether to verify clients connecting to node. Works only if Tailscale is installed (optional, default: `1`)

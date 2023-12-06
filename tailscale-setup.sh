@@ -9,7 +9,7 @@ TS_ACCEPT_DNS=${TS_ACCEPT_DNS}
 TS_UP_SKIP=${TS_UP_SKIP}
 TS_ADVERTISE_ROUTES=${TS_ADVERTISE_ROUTES}
 TS_TAGS=${TS_TAGS}
-TS_PKGS_DOMAIN=${TS_PKGS_DOMAIN}
+TS_PKG_MIRROR=${TS_PKG_MIRROR}
 TS_INSTALL_SKIP=${TS_INSTALL_SKIP}
 
 DERP_DOMAIN=${DERP_DOMAIN}
@@ -120,7 +120,7 @@ function install_tailscale {
         curl -fsSL https://tailscale.com/install.sh | sh
     else
         curl -fsSL https://tailscale.com/install.sh \
-        | sed "s|pkgs.tailscale.com|$TS_PKGS_DOMAIN|g" \
+        | sed "s|https://pkgs.tailscale.com|$TS_PKG_MIRROR|g" \
         | sh
     fi
 }

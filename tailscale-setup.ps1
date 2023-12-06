@@ -17,8 +17,8 @@ param(
     ## Hostname to use in Tailscale network
     [string]$TsHostname = [System.Net.Dns]::GetHostName(),
 
-    ## Domain name of mirror where Tailscale's packages hosted (e.g. `ts-pkg.example.com`)
-    [string]$TsPkgsDomain = "pkgs.tailscale.com",
+    ## Tailscale packages repository mirror (e.g. `https://pkgs.example.com/ts`)
+    [string]$TsPkgMirror = "https://pkgs.tailscale.com",
 
     ## Additional arguments when connecting to Tailscale
     [string]$TsUpArgs,
@@ -53,7 +53,7 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-$TsDlUrl = "https://$TsPkgsDomain/stable/tailscale-setup-latest-amd64.msi"
+$TsDlUrl = "$TsPkgMirror/stable/tailscale-setup-latest-amd64.msi"
 
 $tempFolder = [System.IO.Path]::GetTempPath()
 $fileName = "ts_setup.msi"
